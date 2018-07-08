@@ -1,3 +1,4 @@
+# coding=UTF-8
 # Kółko i krzyżyk - wersja BIG
 # gra toczy się na planszy 10x10
 # a żeby wygrać trzeba ustawić pięć znaków
@@ -54,12 +55,6 @@ def WszystkieZajete():
             return False
     return True
         
-    #for x in range (ROZMIAR_PLANSZY):
-    #    for y in range (ROZMIAR_PLANSZY):
-    #        if plansza[x][y] == PUSTY:
-    #            return False
-    #return True
-    
 def WyswietlPlansze():
     """Wyświetla planszę na ekranie"""
     print (CLS)
@@ -86,7 +81,7 @@ def RuchCzlowieka():
     while True: # wieczna pętla, dopóki gracz nie wpisze czegoś sensownego
         x=None
         y=None
-        while x not in range (0, ROZMIAR_PLANSZY-1) or y not in range (0, ROZMIAR_PLANSZY-1):
+        while x not in range (0, ROZMIAR_PLANSZY) or y not in range (0, ROZMIAR_PLANSZY):
             x=input ("x=")
             if x == 'q':
                 return False
@@ -94,8 +89,8 @@ def RuchCzlowieka():
             x=int(x)-1
             y=int(y)-1
         pole=(x, y)
-        if plansza[x][y] == PUSTY:
-            plansza[x][y]=człowiek # wstawiamy ruch do planszy
+        if plansza[y][x] == PUSTY:
+            plansza[y][x]=człowiek # wstawiamy ruch do planszy
             return True             # i wychodzimy z funkcji
         else:
             print ("To pole jest zajęte!")
@@ -105,9 +100,9 @@ def RuchCzlowieka():
 def RuchKomputera():
     """Komputer wybiara pole, na którym postawi znak"""
     # na razie wybór będzie absolutnie losowy
-    x=random.randint (0, ROZMIAR_PLANSZY)
-    y=random.randint (0, ROZMIAR_PLANSZY)
-    plansza[x][y]=komputer
+    x=random.randint (0, ROZMIAR_PLANSZY-1)
+    y=random.randint (0, ROZMIAR_PLANSZY-1)
+    plansza[y][x]=komputer
     
 
 
@@ -118,7 +113,21 @@ def ZamienGracza (gracz):
     else:
         return 'człowiek'
         
+def SprawdzLinie (pole, kierunek):
+    """Sprawdza linię od pola <pole> w podanym kierunku - N, NE, E, SE, S, SW, W, NW
+       Zwraca None, jeśli linii nie da się utworzyć, albo ilość X i O jako dwie zmienne"""
+    if kierunek == 'E': #linia pozioma w prawo
+        iksy=0; kolka=0
+        for x in range (pole[0], pole[0]+5):
+            if x > ROZMIAR_PLANSZY-1:
+                return None     #pole poza planszą
+            if plansza[pole[1]][x] == X:
+                iksy += 1
+            if plansza[pole[1]][x] == O:
+                kolka += 1
+        return iksy, kolka
 
+        
 
 
 
