@@ -115,7 +115,41 @@ def RuchCzlowieka():
     # koniec pętli
 
 def RuchKomputera():
-    """Komputer wybiara pole, na którym postawi znak"""
+    """Komputer wybiera pole, na którym postawi znak"""
+    # tworzymy pustą mapę wartości pól
+    mapa=[0]*ROZMIAR_PLANSZY     # najpierw tworzymy listę z <wierszy> elementów
+                                    # elementy listy mogą być dowolne
+    for i in range (ROZMIAR_PLANSZY):
+        mapa[i]=[0]*ROZMIAR_PLANSZY
+    
+    # wypełniamy wartościami
+    for i in DozwoloneRuchy():
+        wartosc=0
+        for j in UtworzPunktyDoSprawdzenia (i, "poziom"):
+            iksy, kolka = SprawdzLinie(j, "E")
+            if komputer == X:
+                if iksy == 0 and kolka == 0: wartosc += 1   # linia pusta
+                if iksy == 1 and kolka == 0: wartosc += 2   # linia z jednym X
+                if iksy == 2 and kolka == 0: wartosc += 4   # linia z dwoma X
+                if iksy == 3 and kolka == 0: wartosc += 10  # linia z trzema X
+                if iksy == 4 and kolka == 0: wartosc += 1000 # trzeba postawić X i wygrać!
+                
+                # teraz przeszkadzamy przeciwnikowi
+                if iksy == 0 and kolka == 1: wartosc -= 1
+                if iksy == 0 and kolka == 2: wartosc -= 1
+                if iksy == 0 and kolka == 3: wartosc += 15  # trzeba koniecznie przeszkodzić
+                if iksy == 0 and kolka == 4: wartosc += 900
+                 
+            
+    
+    
+    
+    
+    
+    
+    
+    
+    
     # na razie wybór będzie absolutnie losowy
     x=random.randint (0, ROZMIAR_PLANSZY-1)
     y=random.randint (0, ROZMIAR_PLANSZY-1)
@@ -195,6 +229,14 @@ def UtworzPunktyDoSprawdzenia (x, y, kierunek):
                 punkty += ((i, i), )
     return punkty
     
+def DozwoloneRuchy():
+    """zwraca krotkę krotek zawierającą wszystkie dozwolone ruchy (czyli puste pola)"""
+    krotka=()
+    for x in range (0, ROZMIAR_PLANSZY):
+        for y in range (0, ROZMIAR_PLANSZY):
+            if plansza[y][x] == PUSTY:
+                krotka += ((x, y), )
+    return krotka
 
 
 
