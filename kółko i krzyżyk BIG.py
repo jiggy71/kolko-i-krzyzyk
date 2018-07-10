@@ -46,7 +46,24 @@ def TakLubNie (pytanie, domyslnie=True):
 
 def Wygrana():
     """zwraca X, O, albo False"""
-    return False # na razie zwraca po prostu False
+    for x in range (0, ROZMIAR_PLANSZY):
+        for y in range (0, ROZMIAR_PLANSZY):
+            iksy, kolka = SprawdzLinie ((x, y), "E")
+            if iksy == 5:
+                return X
+            if kolka == 5:
+                return O
+            iksy, kolka = SprawdzLinie ((x, y), "S")
+            if iksy == 5:
+                return X
+            if kolka == 5:
+                return O    
+            iksy, kolka = SprawdzLinie ((x, y), "SE")
+            if iksy == 5:
+                return X
+            if kolka == 5:
+                return O    
+    return False 
     
 def WszystkieZajete():
     """zwraca True, jeśli wszystkie pola są zajęte, a False, jeśli jest choć jedno wolne"""
@@ -115,25 +132,75 @@ def ZamienGracza (gracz):
         
 def SprawdzLinie (pole, kierunek):
     """Sprawdza linię od pola <pole> w podanym kierunku - N, NE, E, SE, S, SW, W, NW
-       Zwraca None, jeśli linii nie da się utworzyć, albo ilość X i O jako dwie zmienne"""
+       Zwraca <None, None>, jeśli linii nie da się utworzyć, albo ilość X i O jako dwie zmienne"""
+    if kierunek == 'N': #linia pionowa w górę
+        iksy=0; kolka=0
+        for y in range (pole[1], pole[1]-5, -1):
+            if y < 0:
+                return None, None    #pole poza planszą
+            if plansza[y][pole[0]] == X:
+                iksy += 1
+            if plansza[y][pole[0]] == O:
+                kolka += 1
+        return iksy, kolka
     if kierunek == 'E': #linia pozioma w prawo
         iksy=0; kolka=0
         for x in range (pole[0], pole[0]+5):
             if x > ROZMIAR_PLANSZY-1:
-                return None     #pole poza planszą
+                return None, None     #pole poza planszą
             if plansza[pole[1]][x] == X:
                 iksy += 1
             if plansza[pole[1]][x] == O:
                 kolka += 1
         return iksy, kolka
+    if kierunek == 'S': #linia pionowa w dół
+        iksy=0; kolka=0
+        for y in range (pole[1], pole[1]+5):
+            if y > ROZMIAR_PLANSZY-1:
+                return None, None     #pole poza planszą
+            if plansza[y][pole[0]] == X:
+                iksy += 1
+            if plansza[y][pole[0]] == O:
+                kolka += 1
+        return iksy, kolka
+    if kierunek == 'SE': #linia skośna w dół w prawo
+        iksy=0; kolka=0
+        for xy in range (0, 5):
+            x=pole[0]+xy; y=pole[1]+xy
+            if x > ROZMIAR_PLANSZY-1 or y > ROZMIAR_PLANSZY-1:
+                return None, None     #pole poza planszą
+            if plansza[y][x] == X:
+                iksy += 1
+            if plansza[y][x] == O:
+                kolka += 1
+        return iksy, kolka    
 
-        
+def UtworzPunktyDoSprawdzenia (x, y, kierunek):
+    """Dla punktu <x, y> tworzy krotkę zawierającą współrzędne pól, od których utworzona linia przechodzi przez punkt <x, y>
+    kierunek to 'poziom', 'skos' lub 'pion'""" 
+    punkty=()
+    if kierunek == 'poziom':
+        for i in range (x-5, x+1):
+            if i >= 0 and plansza[y][i] == PUSTY:
+                punkty += ((i, y), )    # taki dziwny zapis umożliwia dodanie krotki 
+                                        # do wnętrza innej krotki
+    if kierunek == "pion":
+        for i in range (y-5, y+1):
+            if i>=0 and plansza[i][x] == PUSTY:
+                punkty += ((x, i), )
+    
+    if kierunek == "skos":
+        for i in range (x-5, x+1):
+            if i>=0 and plansza[i][i] == PUSTY:
+                punkty += ((i, i), )
+    return punkty
+    
 
 
 
 # Deklaracja stałych
 
-CLS='\033[H\033[2J'
+CLS="\033[H\033[2J"
 X='X'
 O='O'
 PUSTY=' '
@@ -162,7 +229,11 @@ while not Wygrana () and not WszystkieZajete ():
                                 # Umożliwia to 
                                 # wyjście z pętli gry przed końcem
     czyj_ruch=ZamienGracza (czyj_ruch)
-    
+WyswietlPlansze()
+if Wygrana():
+    print("Wygrana: " + Wygrana())
+
+
 
     
     
